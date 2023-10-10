@@ -2,9 +2,9 @@ from flask import Flask, render_template, request
 from alpha_vantage.timeseries import TimeSeries
 from pyspark.sql import SparkSession
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
-api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'
+api_key = ' TR9UZV9JUE6APDBB'
 ts = TimeSeries(key=api_key, output_format='pandas')
 
 spark = SparkSession.builder.appName("StockAnalysis").getOrCreate()
@@ -21,4 +21,4 @@ def index():
     return render_template("index.html", stock_data=None)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,port=8001)
