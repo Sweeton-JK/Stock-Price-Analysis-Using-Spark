@@ -12,16 +12,22 @@
         <select name="stock_symbol" id="stock_symbol">
             <option value="AAPL">Apple Inc. (AAPL)</option>
             <option value="GOOGL">Alphabet Inc. (GOOGL)</option>
+            <!-- Add more stock options as needed -->
         </select>
         <br><br>
         <input type="submit" value="Analyze">
+        <!-- Add a new button for visualization -->
+        <br><br>
     </form>
-
-    <h2>Stock Data:</h2>
+    
+    <!-- ... existing HTML code ... -->
+    
     {% if stock_data %}
         {{ stock_data | safe }}
     {% else %}
         <p>No data available.</p>
     {% endif %}
+    
+    <!-- Add an image tag to display the chart -->
 </body>
 </html>
