@@ -17,6 +17,9 @@
         <input type="submit" value="Analyze">
         <!-- Add the new button inside the form -->
         <input type="submit" name="plot_graph" value="Plot Closing Price Graph">
+        <label for="selected_date">Select a Date:</label>
+        <input type="date" name="selected_date" id="selected_date">
+        <input type="submit" name="predict_price" value="Predict Stock Price">
     </form>
 
     <h2>Stock Data:</h2>
@@ -30,6 +33,11 @@
     {% if graph_base64 %}
         <h2>Closing Price Graph:</h2>
         <img src="data:image/png;base64,{{ graph_base64 }}" alt="Closing Price Graph">
+    {% endif %}
+
+    {% if predicted_price is defined %}
+        <h2>Predicted Stock Price:</h2>
+        <p>Predicted closing price on {{ request.form.selected_date }}: ${{ predicted_price }}</p>
     {% endif %}
 
 </body>
