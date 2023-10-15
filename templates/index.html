@@ -11,15 +11,19 @@
         <select name="stock_symbol" id="stock_symbol">
             <option value="AAPL">Apple Inc. (AAPL)</option>
             <option value="GOOGL">Alphabet Inc. (GOOGL)</option>
-            <!-- Add more stock options as needed -->
+            <option value="AAPL">Apple Inc. (AAPL)</option>
+            <option value="GOOGL">Alphabet Inc. (GOOGL)</option>
+            <option value="MSFT">Microsoft Corporation (MSFT)</option>
+            <option value="AMZN">Amazon.com Inc. (AMZN)</option>
+            <option value="TSLA">Tesla Inc. (TSLA)</option>
         </select>
         <br><br>
         <input type="submit" value="Analyze">
-        <!-- Add the new button inside the form -->
         <input type="submit" name="plot_graph" value="Plot Closing Price Graph">
         <label for="selected_date">Select a Date:</label>
         <input type="date" name="selected_date" id="selected_date">
         <input type="submit" name="predict_price" value="Predict Stock Price">
+        <input type="submit" name="recommend_best_stock" value="Recommend">
     </form>
 
     <h2>Stock Data:</h2>
@@ -29,7 +33,6 @@
         <p>No data available.</p>
     {% endif %}
 
-    <!-- Add a conditional check for the graph -->
     {% if graph_base64 %}
         <h2>Closing Price Graph:</h2>
         <img src="data:image/png;base64,{{ graph_base64 }}" alt="Closing Price Graph">
@@ -38,6 +41,13 @@
     {% if predicted_price is defined %}
         <h2>Predicted Stock Price:</h2>
         <p>Predicted closing price on {{ request.form.selected_date }}: ${{ predicted_price }}</p>
+    {% endif %}
+
+    <h2>Recommended Stock:</h2>
+    {% if best_stock %}
+        <p>The recommended stock to buy is: {{ best_stock }}</p>
+    {% else %}
+        <p>No recommendation available.</p>
     {% endif %}
 
 </body>

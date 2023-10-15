@@ -9,11 +9,14 @@ from io import BytesIO
 import pandas as pd
 import matplotlib.pyplot as plt
 import base64
+from pyspark.sql import SparkSession
 
 app = Flask(__name__)
 
 api_key = 'TR9UZV9JUE6APDBB'
 ts = TimeSeries(key=api_key, output_format='pandas')
+
+spark = SparkSession.builder.appName("StockGraphFrames").getOrCreate()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -21,6 +24,13 @@ def index():
         selected_stock = request.form["stock_symbol"]
 
         stock_data, meta_data = ts.get_daily(symbol=selected_stock, outputsize="compact")
+
+        if request.form.get("recommend_best_stock"):
+            # Fetch historical stock data for various stocks
+            best_stock = recommend_best_stock_spark()
+
+            return render_template("index.html", best_stock=best_stock)
+
         if request.form.get("predict_price"):
             stock_data, _ = ts.get_daily(symbol=selected_stock, outputsize="full")
 
@@ -60,6 +70,29 @@ def index():
         return render_template("index.html", stock_data=stock_data.to_html(), graph=None)
 
     return render_template("index.html", stock_data=None, graph_base64=None)
+
+def recommend_best_stock_spark():
+
+    stock_symbols = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"] 
+
+    stock_data_combined = pd.DataFrame()
+
+    for symbol in stock_symbols:
+        data, _ = ts.get_daily(symbol=symbol, outputsize="compact")
+        stock_data = data[['4. close']]
+        stock_data.reset_index(inplace=True)
+        stock_data['stock_symbol'] = symbol
+        stock_data_combined = pd.concat([stock_data_combined, stock_data], ignore_index=True)
+
+    spark_df = spark.createDataFrame(stock_data_combined)
+
+    spark_df = spark_df.withColumnRenamed("4. close", "close")
+
+    spark_df = spark_df.withColumn("change_in_price", spark_df["close"] - spark_df["close"])
+
+    best_stock = spark_df.orderBy("change_in_price", ascending=False).select("stock_symbol").first()["stock_symbol"]
+
+    return best_stock
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
